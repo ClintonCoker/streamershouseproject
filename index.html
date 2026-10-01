@@ -1,0 +1,1106 @@
+ <!--
+  Clinton Olatunji 
+  -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Streamers House '26 — Internal Planning Portal</title>
+  <meta name="description" content="Internal operations planning portal for Streamers House '26 — Toronto, Ontario, Mid August 2026.">
+  <meta name="robots" content="noindex"> <!-- Private — not for public search indexing -->
+
+  <!-- ── Google Fonts ── -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- ── Font Awesome Icons ── -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- ── Firebase SDK (Realtime Database) ── -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <!-- ── Portal Stylesheet ── -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- ============================================================
+       MOBILE MENU BUTTON
+       Visible only on screens < 900px (controlled by CSS)
+       ============================================================ -->
+  <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation">
+    <i class="fas fa-bars"></i>
+  </button>
+
+  <!-- ============================================================
+       FIREBASE STATUS PILL
+       Top-right indicator: "Live sync" | "Saving…" | "Local only"
+       ============================================================ -->
+  <div id="firebase-status">
+    <div class="dot"></div>
+    <span id="fs-label">Connecting…</span>
+  </div>
+
+  <!-- ============================================================
+       SIDEBAR NAVIGATION
+       ============================================================ -->
+  <nav id="sidebar" aria-label="Portal navigation">
+
+    <!-- Brand -->
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">
+        <i class="fas fa-broadcast-tower"></i>
+      </div>
+      <div>
+        <div class="brand">Streamers House</div>
+        <div class="sub">Internal Ops Portal '26</div>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="sidebar-search">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search sections…"
+        aria-label="Search navigation"
+      >
+    </div>
+
+    <!-- Navigation Links -->
+    <div class="sidebar-nav">
+
+      <div class="nav-section-label">Overview</div>
+      <a class="nav-item active" data-section="dashboard" href="#">
+        <i class="fas fa-th-large"></i> Dashboard
+      </a>
+      <a class="nav-item" data-section="about" href="#">
+        <i class="fas fa-info-circle"></i> About
+      </a>
+      <a class="nav-item" data-section="team" href="#">
+        <i class="fas fa-users"></i> Team
+      </a>
+      <a class="nav-item" data-section="creators" href="#">
+        <i class="fas fa-star"></i> Creators
+      </a>
+      <a class="nav-item" data-section="guest" href="#">
+        <i class="fas fa-user-plus"></i> Guest
+      </a>
+      <a class="nav-item" data-section="sponsors" href="#">
+        <i class="fas fa-handshake"></i> Sponsors
+      </a>
+
+      <div class="nav-section-label">Planning</div>
+      <a class="nav-item" data-section="timeline" href="#">
+        <i class="fas fa-calendar-alt"></i> Timeline
+      </a>
+      <a class="nav-item" data-section="announcements" href="#">
+        <i class="fas fa-bullhorn"></i> Announcements
+      </a>
+      <a class="nav-item" data-section="streaming" href="#">
+        <i class="fas fa-broadcast-tower"></i> Streaming Plan
+      </a>
+      <a class="nav-item" data-section="tasks" href="#">
+        <i class="fas fa-check-square"></i> Creator Tasks
+      </a>
+
+      <div class="nav-section-label">Logistics</div>
+      <a class="nav-item" data-section="food" href="#">
+        <i class="fas fa-utensils"></i> Food
+      </a>
+      <a class="nav-item" data-section="budget" href="#">
+        <i class="fas fa-dollar-sign"></i> Budget
+      </a>
+      <a class="nav-item" data-section="social" href="#">
+        <i class="fas fa-share-alt"></i> Social Media
+      </a>
+
+    </div>
+
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer">
+      <span>v0.1 Planning Mock-up</span>
+      <div class="sync-indicator">
+        <div class="sync-dot" id="syncDot"></div>
+        <span id="syncLabel">Connecting…</span>
+      </div>
+    </div>
+
+  </nav>
+
+  <!-- ============================================================
+       MAIN CONTENT
+       ============================================================ -->
+  <main id="main">
+
+    <!-- ══════════════════════════════════════════════════════════
+         SECTION 1: DASHBOARD
+         ══════════════════════════════════════════════════════════ -->
+    <section class="section active" id="sec-dashboard">
+      <div class="section-header">
+        <div class="section-eyebrow">Overview</div>
+        <div class="section-title">Dashboard</div>
+        <div class="section-desc">Real-time operations center for Streamers House '26.</div>
+      </div>
+
+      <!-- Hero — Toronto CN Tower SVG Skyline (Golden Hour / Dusk) -->
+      <div class="hero-section">
+        <svg
+          width="100%"
+          height="100%"
+          viewBox="0 0 1400 360"
+          xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="xMidYMid slice"
+          aria-label="Toronto CN Tower skyline at dusk"
+          style="position:absolute;inset:0"
+        >
+          <defs>
+            <!-- Dramatic dusk sky: deep purple to orange -->
+            <linearGradient id="duskSky" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"   stop-color="#0d0820"/>
+              <stop offset="25%"  stop-color="#1a0d35"/>
+              <stop offset="50%"  stop-color="#2d1854"/>
+              <stop offset="70%"  stop-color="#8B3A1A"/>
+              <stop offset="85%"  stop-color="#C4621A"/>
+              <stop offset="100%" stop-color="#E8891C"/>
+            </linearGradient>
+            <!-- Warm horizon glow -->
+            <radialGradient id="horizonGlow" cx="50%" cy="100%" r="60%">
+              <stop offset="0%"   stop-color="#E8891C" stop-opacity="0.6"/>
+              <stop offset="40%"  stop-color="#C4621A" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#2d1854" stop-opacity="0"/>
+            </radialGradient>
+            <!-- CN Tower gold-to-dark gradient -->
+            <linearGradient id="cnTower" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"   stop-color="#D4AF37"/>
+              <stop offset="30%"  stop-color="#B8860B"/>
+              <stop offset="70%"  stop-color="#6B4E0A"/>
+              <stop offset="100%" stop-color="#3D2B05"/>
+            </linearGradient>
+            <!-- Building gradients (dark silhouettes) -->
+            <linearGradient id="bldA" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"   stop-color="#2a2a4a"/>
+              <stop offset="100%" stop-color="#0d0d18"/>
+            </linearGradient>
+            <linearGradient id="bldB" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"   stop-color="#1e2a3a"/>
+              <stop offset="100%" stop-color="#080c14"/>
+            </linearGradient>
+            <linearGradient id="bldC" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"   stop-color="#241a38"/>
+              <stop offset="100%" stop-color="#0a0814"/>
+            </linearGradient>
+            <!-- Lake Ontario water -->
+            <linearGradient id="lakeWater" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"   stop-color="#1a1030"/>
+              <stop offset="100%" stop-color="#050308"/>
+            </linearGradient>
+            <!-- Sunset reflection on water -->
+            <linearGradient id="waterReflection" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%"   stop-color="#1a1030" stop-opacity="0"/>
+              <stop offset="35%"  stop-color="#8B3A1A" stop-opacity="0.25"/>
+              <stop offset="50%"  stop-color="#E8891C" stop-opacity="0.35"/>
+              <stop offset="65%"  stop-color="#8B3A1A" stop-opacity="0.25"/>
+              <stop offset="100%" stop-color="#1a1030" stop-opacity="0"/>
+            </linearGradient>
+            <!-- Rogers Centre dome -->
+            <radialGradient id="rogersDome" cx="50%" cy="30%" r="70%">
+              <stop offset="0%"   stop-color="#2a3550"/>
+              <stop offset="100%" stop-color="#0d1020"/>
+            </radialGradient>
+            <!-- Window glow filter -->
+            <filter id="winGlow">
+              <feGaussianBlur stdDeviation="0.5" result="blur"/>
+              <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+            </filter>
+          </defs>
+
+          <!-- Sky base + horizon glow -->
+          <rect width="1400" height="360" fill="url(#duskSky)"/>
+          <rect width="1400" height="360" fill="url(#horizonGlow)"/>
+
+          <!-- Stars (upper portion only) -->
+          <g opacity="0.7">
+            <circle cx="80"   cy="25" r="1"   fill="#fff" opacity="0.8"/>
+            <circle cx="160"  cy="14" r="0.7" fill="#fff" opacity="0.6"/>
+            <circle cx="240"  cy="32" r="1.1" fill="#fff" opacity="0.5"/>
+            <circle cx="310"  cy="8"  r="0.8" fill="#fff" opacity="0.7"/>
+            <circle cx="420"  cy="20" r="0.7" fill="#fff" opacity="0.6"/>
+            <circle cx="520"  cy="11" r="1"   fill="#fff" opacity="0.8"/>
+            <circle cx="1050" cy="18" r="1.1" fill="#fff" opacity="0.7"/>
+            <circle cx="1150" cy="9"  r="0.7" fill="#fff" opacity="0.6"/>
+            <circle cx="1250" cy="26" r="1"   fill="#fff" opacity="0.5"/>
+            <circle cx="1330" cy="14" r="0.8" fill="#fff" opacity="0.7"/>
+          </g>
+
+          <!-- Crescent moon -->
+          <circle cx="1280" cy="45" r="20" fill="#FFF5D6" opacity="0.9"/>
+          <circle cx="1290" cy="38" r="16" fill="#1a0d35"/>
+
+          <!-- Background buildings (left cluster) -->
+          <rect x="100" y="190" width="55"  height="140" fill="url(#bldA)" rx="2"/>
+          <rect x="150" y="175" width="45"  height="155" fill="url(#bldB)" rx="2"/>
+          <rect x="190" y="185" width="60"  height="145" fill="url(#bldA)" rx="2"/>
+          <rect x="245" y="168" width="50"  height="162" fill="url(#bldC)" rx="2"/>
+          <rect x="290" y="180" width="40"  height="150" fill="url(#bldB)" rx="2"/>
+
+          <!-- Window lights — left cluster -->
+          <g filter="url(#winGlow)">
+            <rect x="108" y="198" width="8" height="6" fill="#E8891C" opacity="0.5" rx="0.8"/>
+            <rect x="122" y="198" width="8" height="6" fill="#4a7090" opacity="0.5" rx="0.8"/>
+            <rect x="136" y="198" width="8" height="6" fill="#E8891C" opacity="0.3" rx="0.8"/>
+            <rect x="108" y="212" width="8" height="6" fill="#4a7090" opacity="0.4" rx="0.8"/>
+            <rect x="122" y="212" width="8" height="6" fill="#E8891C" opacity="0.4" rx="0.8"/>
+            <rect x="253" y="176" width="9" height="6" fill="#E8891C" opacity="0.5" rx="0.8"/>
+            <rect x="268" y="176" width="9" height="6" fill="#4a7090" opacity="0.45" rx="0.8"/>
+            <rect x="253" y="190" width="9" height="6" fill="#4a7090" opacity="0.3" rx="0.8"/>
+          </g>
+
+          <!-- Rogers Centre (Skydome) -->
+          <rect x="320" y="260" width="140" height="70" fill="#0d1520" rx="3"/>
+          <ellipse cx="390" cy="262" rx="95" ry="55" fill="url(#rogersDome)" opacity="0.9"/>
+          <path d="M390,207 Q440,230 480,262" stroke="#1a2535" stroke-width="1.5" fill="none" opacity="0.8"/>
+          <path d="M390,207 Q360,228 330,255" stroke="#1a2535" stroke-width="1.5" fill="none" opacity="0.8"/>
+          <path d="M390,207 Q390,235 390,262" stroke="#1a2535" stroke-width="1.2" fill="none" opacity="0.6"/>
+          <ellipse cx="390" cy="262" rx="70" ry="40" fill="#E8891C" opacity="0.06"/>
+
+          <!-- ── CN TOWER — Hero element ── -->
+          <!-- Base legs / buttresses -->
+          <polygon points="510,330 530,170 540,170 560,330" fill="#1c1828" stroke="#3d3050" stroke-width="0.5"/>
+          <!-- Main shaft -->
+          <rect x="530" y="75" width="14" height="95" fill="url(#cnTower)" rx="2"/>
+          <!-- Main observation pod -->
+          <rect x="512" y="138" width="50" height="22" fill="#2d2840" rx="3" stroke="#D4AF37" stroke-width="0.8"/>
+          <rect x="516" y="141" width="42" height="16" fill="#1a1530" rx="2"/>
+          <!-- Pod windows — glowing amber -->
+          <rect x="518" y="143" width="5" height="10" fill="#E8891C" opacity="0.7" rx="0.5"/>
+          <rect x="526" y="143" width="5" height="10" fill="#FFA040" opacity="0.6" rx="0.5"/>
+          <rect x="534" y="143" width="5" height="10" fill="#E8891C" opacity="0.5" rx="0.5"/>
+          <rect x="542" y="143" width="5" height="10" fill="#FFA040" opacity="0.65" rx="0.5"/>
+          <rect x="550" y="143" width="5" height="10" fill="#E8891C" opacity="0.55" rx="0.5"/>
+          <!-- Space deck (upper pod) -->
+          <rect x="526" y="115" width="22" height="14" fill="#241e38" rx="2" stroke="#C9A227" stroke-width="0.6"/>
+          <rect x="530" y="119" width="4" height="6" fill="#E8891C" opacity="0.6" rx="0.4"/>
+          <rect x="537" y="119" width="4" height="6" fill="#FFA040" opacity="0.5" rx="0.4"/>
+          <rect x="544" y="119" width="4" height="6" fill="#E8891C" opacity="0.55" rx="0.4"/>
+          <!-- Antenna spire -->
+          <rect x="536" y="4" width="2.5" height="111" fill="url(#cnTower)" rx="1"/>
+          <rect x="537" y="4" width="1"   height="111" fill="#F0CC5A" opacity="0.3" rx="0.5"/>
+          <!-- Beacon light with glow rings -->
+          <circle cx="537.5" cy="6" r="4"  fill="#D4AF37"/>
+          <circle cx="537.5" cy="6" r="9"  fill="#D4AF37" opacity="0.3"/>
+          <circle cx="537.5" cy="6" r="16" fill="#D4AF37" opacity="0.1"/>
+
+          <!-- Right-side Toronto skyline buildings -->
+          <rect x="590"  y="145" width="70" height="185" fill="url(#bldB)" rx="2"/>
+          <rect x="655"  y="160" width="55" height="170" fill="url(#bldA)" rx="2"/>
+          <rect x="705"  y="150" width="65" height="180" fill="url(#bldC)" rx="2"/>
+          <rect x="765"  y="168" width="50" height="162" fill="url(#bldB)" rx="2"/>
+          <rect x="810"  y="155" width="70" height="175" fill="url(#bldA)" rx="2"/>
+          <rect x="875"  y="170" width="45" height="160" fill="url(#bldC)" rx="2"/>
+          <rect x="915"  y="158" width="60" height="172" fill="url(#bldB)" rx="2"/>
+          <rect x="970"  y="165" width="55" height="165" fill="url(#bldA)" rx="2"/>
+          <rect x="1020" y="175" width="50" height="155" fill="url(#bldC)" rx="2"/>
+          <rect x="1065" y="162" width="65" height="168" fill="url(#bldB)" rx="2"/>
+          <rect x="1125" y="178" width="55" height="152" fill="url(#bldA)" rx="2"/>
+          <rect x="1175" y="168" width="60" height="162" fill="url(#bldC)" rx="2"/>
+
+          <!-- Window lights — right buildings -->
+          <g filter="url(#winGlow)" opacity="0.9">
+            <rect x="596"  y="153" width="9"  height="7" fill="#E8891C" opacity="0.55" rx="0.8"/>
+            <rect x="611"  y="153" width="9"  height="7" fill="#4a7090" opacity="0.5"  rx="0.8"/>
+            <rect x="713"  y="158" width="9"  height="7" fill="#E8891C" opacity="0.5"  rx="0.8"/>
+            <rect x="728"  y="158" width="9"  height="7" fill="#4a7090" opacity="0.45" rx="0.8"/>
+            <rect x="818"  y="163" width="10" height="7" fill="#E8891C" opacity="0.5"  rx="0.8"/>
+            <rect x="834"  y="163" width="10" height="7" fill="#4a7090" opacity="0.4"  rx="0.8"/>
+            <rect x="923"  y="165" width="9"  height="7" fill="#E8891C" opacity="0.45" rx="0.8"/>
+            <rect x="938"  y="165" width="9"  height="7" fill="#4a7090" opacity="0.4"  rx="0.8"/>
+            <rect x="1073" y="170" width="9"  height="7" fill="#E8891C" opacity="0.45" rx="0.8"/>
+            <rect x="1183" y="175" width="9"  height="7" fill="#E8891C" opacity="0.5"  rx="0.8"/>
+            <rect x="1198" y="175" width="9"  height="7" fill="#4a7090" opacity="0.35" rx="0.8"/>
+          </g>
+
+          <!-- Lake Ontario -->
+          <rect x="0" y="310" width="1400" height="50" fill="url(#lakeWater)"/>
+          <rect x="0" y="310" width="1400" height="50" fill="url(#waterReflection)"/>
+          <!-- Water ripple lines -->
+          <line x1="0" y1="318" x2="1400" y2="318" stroke="#E8891C" stroke-width="0.4" opacity="0.15"/>
+          <line x1="0" y1="326" x2="1400" y2="326" stroke="#E8891C" stroke-width="0.3" opacity="0.1"/>
+          <!-- CN Tower water reflection -->
+          <rect x="535" y="312" width="6" height="40" fill="url(#cnTower)" opacity="0.25" rx="1"/>
+          <ellipse cx="538" cy="340" rx="30" ry="5" fill="#D4AF37" opacity="0.08"/>
+          <!-- Waterfront promenade -->
+          <rect x="0" y="305" width="1400" height="8" fill="#0e0c18"/>
+          <!-- Waterfront lights -->
+          <circle cx="200"  cy="307" r="2" fill="#E8891C" opacity="0.5"/>
+          <circle cx="500"  cy="307" r="2" fill="#E8891C" opacity="0.5"/>
+          <circle cx="700"  cy="307" r="2" fill="#E8891C" opacity="0.4"/>
+          <circle cx="900"  cy="307" r="2" fill="#E8891C" opacity="0.5"/>
+          <circle cx="1100" cy="307" r="2" fill="#E8891C" opacity="0.4"/>
+          <circle cx="1300" cy="307" r="2" fill="#E8891C" opacity="0.5"/>
+        </svg>
+
+        <!-- Dark gradient overlay -->
+        <div class="hero-overlay"></div>
+
+        <!-- Text content over skyline -->
+        <div class="hero-content">
+          <div class="hero-tag">
+            <i class="fas fa-circle" style="font-size:6px"></i>
+            Planning Phase Active
+          </div>
+          <div class="hero-title">Streamers House '26</div>
+          <div class="hero-sub">
+            <i class="fas fa-map-marker-alt" style="color:var(--gold);margin-right:5px"></i>
+            Toronto, Ontario &nbsp;·&nbsp; Mid August &nbsp;·&nbsp; Precise Date TBA
+          </div>
+          <div class="hero-mission">
+            "To help creators grow faster together than they ever could alone
+            while inspiring young people to create instead of consume."
+          </div>
+        </div>
+      </div><!-- /hero-section -->
+
+      <!-- Stat Cards -->
+      <div class="grid-4" style="margin-bottom:18px">
+        <div class="stat-card">
+          <div class="stat-label">Creators</div>
+          <div class="stat-value">8</div>
+          <div class="stat-sub">Confirmed lineup</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Guest</div>
+          <div class="stat-value">1</div>
+          <div class="stat-sub">Day 2 appearance</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Sponsors</div>
+          <div class="stat-value">TBA</div>
+          <div class="stat-sub">Seeking partners</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Event Days</div>
+          <div class="stat-value">3</div>
+          <div class="stat-sub">Mid August 2026</div>
+        </div>
+      </div>
+
+      <!-- Progress + Recent Updates -->
+      <div class="grid-2">
+
+        <!-- Planning Progress -->
+        <div class="card">
+          <div class="card-title">Planning Progress</div>
+          <div class="progress-pct" id="progress-pct">35%</div>
+          <div class="progress-bar-wrapper">
+            <div class="progress-bar-fill" id="progress-fill" style="width:35%"></div>
+          </div>
+          <div class="progress-controls">
+            <input type="range" id="progress-range" min="0" max="100" value="35"
+                   aria-label="Planning progress percentage">
+            <span style="font-size:11px;color:var(--muted)">Drag to update</span>
+          </div>
+          <div style="margin-top:12px;font-size:11.5px;color:var(--muted)">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+              <span>Planning Phase</span>
+              <span style="color:var(--gold)">Active</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+              <span>Location</span>
+              <span>Toronto, Ontario</span>
+            </div>
+            <div style="display:flex;justify-content:space-between">
+              <span>Precise Location</span>
+              <span>To Be Announced</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Updates -->
+        <div class="card">
+          <div class="card-title" style="display:flex;justify-content:space-between;align-items:center">
+            Recent Updates
+            <button class="btn btn-ghost btn-sm" onclick="addUpdate()">
+              <i class="fas fa-plus"></i> Add
+            </button>
+          </div>
+          <ul class="updates-list" id="updates-list">
+            <li>
+              <span class="update-date" contenteditable="true" data-fb="upd-0-date">July 3</span>
+              <span class="update-text" contenteditable="true" data-fb="upd-0-text">Creator lineup updated.</span>
+              <button class="update-del" onclick="deleteUpdate(this)"><i class="fas fa-times"></i></button>
+            </li>
+            <li>
+              <span class="update-date" contenteditable="true" data-fb="upd-1-date">July 5</span>
+              <span class="update-text" contenteditable="true" data-fb="upd-1-text">Trailer shoot confirmed.</span>
+              <button class="update-del" onclick="deleteUpdate(this)"><i class="fas fa-times"></i></button>
+            </li>
+            <li>
+              <span class="update-date" contenteditable="true" data-fb="upd-2-date">July 15</span>
+              <span class="update-text" contenteditable="true" data-fb="upd-2-text">Sponsor meeting completed.</span>
+              <button class="update-del" onclick="deleteUpdate(this)"><i class="fas fa-times"></i></button>
+            </li>
+          </ul>
+        </div>
+
+      </div><!-- /grid-2 -->
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════
+         SECTION 2: ABOUT
+         ══════════════════════════════════════════════════════════ -->
+    <section class="section" id="sec-about">
+      <div class="section-header">
+        <div class="section-eyebrow">The Concept</div>
+        <div class="section-title">About</div>
+        <div class="section-desc">Vision, mission, goals and values behind Streamers House '26.</div>
+      </div>
+      <div class="card">
+        <div class="about-block">
+          <div class="about-label">Vision</div>
+          <div class="about-content" contenteditable="true" data-fb="about-vision">
+            To build the largest and most impactful creator community in Canada, bringing together driven individuals who inspire millions online.
+          </div>
+        </div>
+        <div class="about-block">
+          <div class="about-label">Mission</div>
+          <div class="about-content" contenteditable="true" data-fb="about-mission">
+            To help creators grow faster together than they ever could alone while inspiring young people to create instead of consume.
+          </div>
+        </div>
+        <div class="about-block">
+          <div class="about-label">Goals</div>
+          <div class="about-content" contenteditable="true" data-fb="about-goals">
+            • Produce high-quality collaborative content across multiple platforms
+            • Foster genuine relationships between creators
+            • Attract sponsorship and media coverage
+            • Inspire the next generation of Canadian content creators
+            • Document the event for a YouTube documentary
+          </div>
+        </div>
+        <div class="about-block">
+          <div class="about-label">Core Values</div>
+          <div class="about-content" contenteditable="true" data-fb="about-values">
+            • Authenticity — Real connections, real content
+            • Growth — Every creator leaves better than they arrived
+            • Community — We rise together
+            • Excellence — Premium quality in everything we produce
+            • Consistency — Daily content, daily progress
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════
+         SECTION 3: TEAM
+         ══════════════════════════════════════════════════════════ -->
+    <section class="section" id="sec-team">
+      <div class="section-header">
+        <div class="section-eyebrow">Operations</div>
+        <div class="section-title">Team</div>
+        <div class="section-desc">The people making Streamers House '26 happen.</div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:18px">
+        <div class="team-card">
+          <div class="team-avatar">CC</div>
+          <div>
+            <div class="team-role">Chief Planner</div>
+            <div class="team-name">Clinton Coker</div>
+          </div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar">M3</div>
+          <div>
+            <div class="team-role">House Coordinator</div>
+            <div class="team-name">Mubaraq.3</div>
+          </div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar">CY</div>
+          <div>
+            <div class="team-role">Social Media Manager</div>
+            <div class="team-name">CYBA</div>
+          </div>
+        </div>
+        <div class="team-card">
+          <div class="team-avatar">OR</div>
+          <div>
+            <div class="team-role">Graphics Designer</div>
+            <div class="team-name">ORE</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Media Team — Derafilms</div>
+        <div class="grid-3">
+          <div style="display:flex;align-items:center;gap:9px;padding:9px 0">
+            <i class="fas fa-video"           style="color:var(--gold);width:15px"></i>
+            <span style="font-size:12.5px">Videography</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:9px;padding:9px 0">
+            <i class="fas fa-camera"          style="color:var(--gold);width:15px"></i>
+            <span style="font-size:12.5px">Photography</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:9px;padding:9px 0">
+            <i class="fas fa-plane"           style="color:var(--gold);width:15px"></i>
+            <span style="font-size:12.5px">Drone Coverage</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:9px;padding:9px 0">
+            <i class="fas fa-broadcast-tower" style="color:var(--gold);width:15px"></i>
+            <span style="font-size:12.5px">Event Coverage</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:9px;padding:9px 0">
+            <i class="fas fa-film"            style="color:var(--gold);width:15px"></i>
+            <span style="font-size:12.5px">Cinematic Coverage</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════
+         SECTION 4: CREATORS
+         (Cards rendered dynamically by creators.js)
+         ══════════════════════════════════════════════════════════ -->
+    <section class="section" id="sec-creators">
+      <div class="section-header">
+        <div class="section-eyebrow">Lineup</div>
+        <div class="section-title">Creators</div>
+        <div class="section-desc">The confirmed creator roster for Streamers House '26.</div>
+      </div>
+      <div class="creator-grid" id="creator-grid">
+        <!-- Populated by renderCreators() in creators.js -->
+      </div>
+      <button class="table-add-btn" style="margin-top:14px" onclick="addCreator()">
+        <i class="fas fa-plus"></i> Add Creator
+      </button>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════
+         SECTION 5: GUEST
+         ══════════════════════════════════════════════════════════ -->
+    <section class="section" id="sec-guest">
+      <div class="section-header">
+        <div class="section-eyebrow">Special Appearance</div>
+        <div class="section-title">Guest</div>
+        <div class="section-desc">Day 2 featured guest appearance.</div>
+      </div>
+      <div class="guest-card">
+        <div class="guest-photo">
+          <!-- Replace src with real photo URL or base64 -->
+          <i class="fas fa-user-astronaut"></i>
+        </div>
+        <div style="flex:1">
+          <div class="guest-tag">Day 2 Guest · Influencer</div>
+          <div class="guest-name"   contenteditable="true" data-fb="guest-name">Dreadheadmajik</div>
+          <div class="guest-social" contenteditable="true" data-fb="guest-social">@majik.uncensored · @dreadheadmajik</div>
+          <div class="guest-notes-label">Notes</div>
+          <div class="guest-notes"  contenteditable="true" data-fb="guest-notes">
+            Guest appearance scheduled for Day 2. Coordinate arrival time, content plan,
+            and promotional posts in advance. Collab stream confirmed.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════
+         SECTION 6: SPONSORS
+         ══════════════════════════════════════════════════════════ -->
+    <section class="section" id="sec-sponsors">
+      <div class="section-header">
+        <div class="section-eyebrow">Partnerships</div>
+        <div class="section-title">Sponsors</div>
+        <div class="section-desc">Current status: To Be Announced. Seeking brand partnerships.</div>
+      </div>
+      <div class="grid-3" id="sponsor-grid">
+        <div class="sponsor-card" style="position:relative">
+          <div class="sponsor-logo-area"><i class="fas fa-building"></i></div>
+          <div class="sponsor-name"         contenteditable="true">Sponsor Name</div>
+          <div class="sponsor-contribution" contenteditable="true">Contribution TBD</div>
+          <div class="sponsor-notes"        contenteditable="true">Notes about this sponsor…</div>
+          <button class="card-del" onclick="deleteSponsor(this)"><i class="fas fa-times"></i></button>
+        </div>
+      </div>
+      <button class="table-add-btn" style="margin-top:14px" onclick="addSponsor()">
+        <i class="fas fa-plus"></i> Add Sponsor
+      </button>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════
+         SECTION 7: TIMELINE
+         ══════════════════════════════════════════════════════════ -->
+    <section class="section" id="sec-timeline">
+      <div class="section-header">
+        <div class="section-eyebrow">Schedule</div>
+        <div class="section-title">Timeline</div>
+        <div class="section-desc">Milestones across all three event phases.</div>
+      </div>
+
+      <!-- PRE EVENT -->
+      <div class="timeline-phase">
+        <div class="phase-label">Pre Event</div>
+        <ul class="timeline-list" id="tl-pre">
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">Creator confirmations</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">Graphics</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">Trailer shoot</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">Publicity</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">Airbnb booking</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">Creator photos</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">Meetings</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">Logistics</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+        </ul>
+        <button class="table-add-btn" style="margin-top:7px" onclick="addTlItem('tl-pre')">
+          <i class="fas fa-plus"></i> Add Item
+        </button>
+      </div>
+
+      <!-- DURING EVENT -->
+      <div class="timeline-phase">
+        <div class="phase-label">During Event</div>
+
+        <div class="day-label">Day 1</div>
+        <ul class="timeline-list" id="tl-day1" style="margin-bottom:10px">
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">Arrival</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">House Tour</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">Content Creation</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">Streaming</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">Dinner</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">Night Recap</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+        </ul>
+        <button class="table-add-btn" style="margin-bottom:14px" onclick="addTlItem('tl-day1')"><i class="fas fa-plus"></i> Add</button>
+
+        <div class="day-label">Day 2</div>
+        <ul class="timeline-list" id="tl-day2" style="margin-bottom:10px">
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">Morning Meeting</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">Streaming</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">Collaborations</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">Guest Appearance</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">Editing</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">Night Stream</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+        </ul>
+        <button class="table-add-btn" style="margin-bottom:14px" onclick="addTlItem('tl-day2')"><i class="fas fa-plus"></i> Add</button>
+
+        <div class="day-label">Day 3</div>
+        <ul class="timeline-list" id="tl-day3" style="margin-bottom:10px">
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">Morning</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">Final Content</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">Reflection</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">Packing</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">Wrap Up</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+        </ul>
+        <button class="table-add-btn" onclick="addTlItem('tl-day3')"><i class="fas fa-plus"></i> Add</button>
+      </div>
+
+      <!-- POST EVENT -->
+      <div class="timeline-phase">
+        <div class="phase-label">Post Event</div>
+        <ul class="timeline-list" id="tl-post">
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">Highlight Videos</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">YouTube Documentary</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">Photo Dump</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">Sponsor Appreciation</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">Feedback Meeting</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+          <li class="timeline-item"><input type="checkbox"><span class="timeline-item-text" contenteditable="true">Season 2 Planning</span><button class="timeline-del" onclick="deleteTlItem(this)"><i class="fas fa-times"></i></button></li>
+        </ul>
+        <button class="table-add-btn" style="margin-top:7px" onclick="addTlItem('tl-post')">
+          <i class="fas fa-plus"></i> Add Item
+        </button>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════
+         SECTION 8: ANNOUNCEMENTS
+         ══════════════════════════════════════════════════════════ -->
+    <section class="section" id="sec-announcements">
+      <div class="section-header">
+        <div class="section-eyebrow">Updates</div>
+        <div class="section-title">Announcements</div>
+        <div class="section-desc">Internal announcements for all team members.</div>
+      </div>
+      <button class="btn btn-gold" style="margin-bottom:18px" onclick="addAnnouncement()">
+        <i class="fas fa-plus"></i> New Announcement
+      </button>
+      <div class="grid-2" id="announcements-grid">
+        <div class="announcement-card">
+          <div class="ann-date"  contenteditable="true">July 5</div>
+          <div class="ann-title" contenteditable="true">Trailer Shoot</div>
+          <div class="ann-body"  contenteditable="true">Everyone should be available. Come camera-ready.</div>
+          <button class="ann-del" onclick="deleteAnnouncement(this)"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="announcement-card">
+          <div class="ann-date"  contenteditable="true">July 18</div>
+          <div class="ann-title" contenteditable="true">Group Photoshoot</div>
+          <div class="ann-body"  contenteditable="true">Location and time TBD. Coordinate outfits with ORE.</div>
+          <button class="ann-del" onclick="deleteAnnouncement(this)"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="announcement-card">
+          <div class="ann-date"  contenteditable="true">August 1</div>
+          <div class="ann-title" contenteditable="true">Final Planning Meeting</div>
+          <div class="ann-body"  contenteditable="true">All organizers and creators must attend. Final checklist review.</div>
+          <button class="ann-del" onclick="deleteAnnouncement(this)"><i class="fas fa-times"></i></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════
+         SECTION 9: STREAMING PLAN
+         ══════════════════════════════════════════════════════════ -->
+    <section class="section" id="sec-streaming">
+      <div class="section-header">
+        <div class="section-eyebrow">Broadcast</div>
+        <div class="section-title">Streaming Plan</div>
+        <div class="section-desc">Schedule of all streams across the 3-day event.</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Streamer</th>
+              <th>Platform</th>
+              <th>Topic</th>
+              <th>Notes</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="streaming-body">
+            <tr>
+              <td contenteditable="true">Day 1 – 7:00 PM</td>
+              <td contenteditable="true">Clinton Coker</td>
+              <td contenteditable="true">Twitch / TikTok</td>
+              <td contenteditable="true">Arrival Livestream</td>
+              <td contenteditable="true">House reveal stream</td>
+              <td><button class="del-row-btn" onclick="deleteStreamRow(this)"><i class="fas fa-times"></i></button></td>
+            </tr>
+            <tr>
+              <td contenteditable="true">Day 1 – 9:00 PM</td>
+              <td contenteditable="true">Mubaraq.3</td>
+              <td contenteditable="true">Kick / YouTube</td>
+              <td contenteditable="true">Night Recap Stream</td>
+              <td contenteditable="true">Day 1 recap with chat</td>
+              <td><button class="del-row-btn" onclick="deleteStreamRow(this)"><i class="fas fa-times"></i></button></td>
+            </tr>
+            <tr>
+              <td contenteditable="true">Day 2 – 2:00 PM</td>
+              <td contenteditable="true">Multiple Creators</td>
+              <td contenteditable="true">All Platforms</td>
+              <td contenteditable="true">Collaboration Stream</td>
+              <td contenteditable="true">Cross-platform collab</td>
+              <td><button class="del-row-btn" onclick="deleteStreamRow(this)"><i class="fas fa-times"></i></button></td>
+            </tr>
+            <tr>
+              <td contenteditable="true">Day 2 – 8:00 PM</td>
+              <td contenteditable="true">All Creators</td>
+              <td contenteditable="true">TikTok Live</td>
+              <td contenteditable="true">Guest Appearance</td>
+              <td contenteditable="true">Feature Dreadheadmajik</td>
+              <td><button class="del-row-btn" onclick="deleteStreamRow(this)"><i class="fas fa-times"></i></button></td>
+            </tr>
+            <tr>
+              <td contenteditable="true">Day 3 – 6:00 PM</td>
+              <td contenteditable="true">Clinton Coker</td>
+              <td contenteditable="true">All Platforms</td>
+              <td contenteditable="true">Wrap-Up Stream</td>
+              <td contenteditable="true">Final reflections</td>
+              <td><button class="del-row-btn" onclick="deleteStreamRow(this)"><i class="fas fa-times"></i></button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <button class="table-add-btn" onclick="addStreamRow()">
+        <i class="fas fa-plus"></i> Add Stream
+      </button>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════
+         SECTION 10: CREATOR TASKS
+         (Rendered dynamically by creators.js)
+         ══════════════════════════════════════════════════════════ -->
+    <section class="section" id="sec-tasks">
+      <div class="section-header">
+        <div class="section-eyebrow">Accountability</div>
+        <div class="section-title">Creator Tasks</div>
+        <div class="section-desc">Individual checklists for each creator.</div>
+      </div>
+      <div class="grid-2" id="tasks-grid">
+        <!-- Populated by renderTasks() in creators.js -->
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════
+         SECTION 11: FOOD PLAN
+         ══════════════════════════════════════════════════════════ -->
+    <section class="section" id="sec-food">
+      <div class="section-header">
+        <div class="section-eyebrow">Catering</div>
+        <div class="section-title">Food Plan</div>
+        <div class="section-desc">Meal planning across all 3 days.</div>
+      </div>
+
+      <!-- Day 1 -->
+      <div class="food-day">
+        <div class="food-day-title">Day 1</div>
+        <div class="food-grid">
+          <div class="food-card">
+            <div class="food-meal">Breakfast</div>
+            <div class="food-content" contenteditable="true" data-fb="food-d1-breakfast">Eggs, toast, fruit, coffee &amp; juice</div>
+          </div>
+          <div class="food-card">
+            <div class="food-meal">Lunch</div>
+            <div class="food-content" contenteditable="true" data-fb="food-d1-lunch">Sandwich platters, chips, sparkling water</div>
+          </div>
+          <div class="food-card">
+            <div class="food-meal">Dinner</div>
+            <div class="food-content" contenteditable="true" data-fb="food-d1-dinner">BBQ night — burgers, chicken, veggie options</div>
+          </div>
+          <div class="food-card">
+            <div class="food-meal">Snacks</div>
+            <div class="food-content" contenteditable="true" data-fb="food-d1-snacks">Fruit trays, energy drinks, popcorn, nuts</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Day 2 -->
+      <div class="food-day">
+        <div class="food-day-title">Day 2</div>
+        <div class="food-grid">
+          <div class="food-card">
+            <div class="food-meal">Breakfast</div>
+            <div class="food-content" contenteditable="true" data-fb="food-d2-breakfast">Pancakes, bacon, yogurt parfaits</div>
+          </div>
+          <div class="food-card">
+            <div class="food-meal">Lunch</div>
+            <div class="food-content" contenteditable="true" data-fb="food-d2-lunch">Wraps, salads, fresh juices</div>
+          </div>
+          <div class="food-card">
+            <div class="food-meal">Dinner</div>
+            <div class="food-content" contenteditable="true" data-fb="food-d2-dinner">Catered Nigerian / Caribbean fusion</div>
+          </div>
+          <div class="food-card">
+            <div class="food-meal">Snacks</div>
+            <div class="food-content" contenteditable="true" data-fb="food-d2-snacks">Cookies, drinks, candy bar</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Day 3 -->
+      <div class="food-day">
+        <div class="food-day-title">Day 3</div>
+        <div class="food-grid">
+          <div class="food-card">
+            <div class="food-meal">Breakfast</div>
+            <div class="food-content" contenteditable="true" data-fb="food-d3-breakfast">Omelette station, pastries, smoothies</div>
+          </div>
+          <div class="food-card">
+            <div class="food-meal">Lunch</div>
+            <div class="food-content" contenteditable="true" data-fb="food-d3-lunch">Pizza, wings, sodas</div>
+          </div>
+          <div class="food-card">
+            <div class="food-meal">Dinner</div>
+            <div class="food-content" contenteditable="true" data-fb="food-d3-dinner">Farewell dinner — restaurant or delivered</div>
+          </div>
+          <div class="food-card">
+            <div class="food-meal">Snacks</div>
+            <div class="food-content" contenteditable="true" data-fb="food-d3-snacks">Leftover snacks, final energy drinks</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════
+         SECTION 12: BUDGET
+         ══════════════════════════════════════════════════════════ -->
+    <section class="section" id="sec-budget">
+      <div class="section-header">
+        <div class="section-eyebrow">Finance</div>
+        <div class="section-title">Budget</div>
+        <div class="section-desc">Estimated vs actual costs — auto-calculating totals.</div>
+      </div>
+
+      <!-- Summary cards -->
+      <div class="budget-total">
+        <div class="budget-total-card">
+          <div class="budget-total-label">Estimated Total</div>
+          <div class="budget-total-value" id="budget-est-total">$0</div>
+        </div>
+        <div class="budget-total-card">
+          <div class="budget-total-label">Actual Total</div>
+          <div class="budget-total-value" id="budget-actual-total" style="color:var(--gold)">$0</div>
+        </div>
+        <div class="budget-total-card">
+          <div class="budget-total-label">Variance</div>
+          <div class="budget-total-value" id="budget-variance">$0</div>
+        </div>
+      </div>
+
+      <!-- Line items table -->
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Estimated ($)</th>
+              <th>Actual ($)</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="budget-body">
+            <tr>
+              <td contenteditable="true">Airbnb</td>
+              <td contenteditable="true" class="est-col">3500</td>
+              <td contenteditable="true" class="actual-col">0</td>
+              <td><span class="status-badge status-pending">Pending</span></td>
+              <td><button class="del-row-btn" onclick="deleteBudgetRow(this)"><i class="fas fa-times"></i></button></td>
+            </tr>
+            <tr>
+              <td contenteditable="true">Food</td>
+              <td contenteditable="true" class="est-col">1200</td>
+              <td contenteditable="true" class="actual-col">0</td>
+              <td><span class="status-badge status-pending">Pending</span></td>
+              <td><button class="del-row-btn" onclick="deleteBudgetRow(this)"><i class="fas fa-times"></i></button></td>
+            </tr>
+            <tr>
+              <td contenteditable="true">Transportation</td>
+              <td contenteditable="true" class="est-col">600</td>
+              <td contenteditable="true" class="actual-col">0</td>
+              <td><span class="status-badge status-pending">Pending</span></td>
+              <td><button class="del-row-btn" onclick="deleteBudgetRow(this)"><i class="fas fa-times"></i></button></td>
+            </tr>
+            <tr>
+              <td contenteditable="true">Decorations</td>
+              <td contenteditable="true" class="est-col">400</td>
+              <td contenteditable="true" class="actual-col">0</td>
+              <td><span class="status-badge status-tbd">TBD</span></td>
+              <td><button class="del-row-btn" onclick="deleteBudgetRow(this)"><i class="fas fa-times"></i></button></td>
+            </tr>
+            <tr>
+              <td contenteditable="true">Media (Derafilms)</td>
+              <td contenteditable="true" class="est-col">1500</td>
+              <td contenteditable="true" class="actual-col">0</td>
+              <td><span class="status-badge status-tbd">TBD</span></td>
+              <td><button class="del-row-btn" onclick="deleteBudgetRow(this)"><i class="fas fa-times"></i></button></td>
+            </tr>
+            <tr>
+              <td contenteditable="true">Miscellaneous</td>
+              <td contenteditable="true" class="est-col">500</td>
+              <td contenteditable="true" class="actual-col">0</td>
+              <td><span class="status-badge status-tbd">TBD</span></td>
+              <td><button class="del-row-btn" onclick="deleteBudgetRow(this)"><i class="fas fa-times"></i></button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <button class="table-add-btn" onclick="addBudgetRow()">
+        <i class="fas fa-plus"></i> Add Line Item
+      </button>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════
+         SECTION 13: SOCIAL MEDIA
+         ══════════════════════════════════════════════════════════ -->
+    <section class="section" id="sec-social">
+      <div class="section-header">
+        <div class="section-eyebrow">Digital Presence</div>
+        <div class="section-title">Social Media</div>
+        <div class="section-desc">Official Streamers House '26 channels.</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:12px;max-width:560px">
+
+        <!-- Instagram -->
+        <div class="social-card">
+          <div class="social-icon social-ig"><i class="fab fa-instagram"></i></div>
+          <div>
+            <div class="social-label">Instagram</div>
+            <div class="social-link" contenteditable="true" data-fb="social-ig-handle">@streamerhouse3</div>
+            <a class="social-link-url"
+               href="https://www.instagram.com/streamerhouse3?igsh=enhxMGtoMzI5cnM3&utm_source=qr"
+               target="_blank" rel="noopener">
+              instagram.com/streamerhouse3
+            </a>
+          </div>
+        </div>
+
+        <!-- TikTok -->
+        <div class="social-card">
+          <div class="social-icon social-tt"><i class="fab fa-tiktok"></i></div>
+          <div>
+            <div class="social-label">TikTok</div>
+            <div class="social-link" contenteditable="true" data-fb="social-tt-handle">@streamershouse26</div>
+            <a class="social-link-url"
+               href="https://www.tiktok.com/@streamershouse26?_r=1&_t=ZS-97ZHaKvjf1A"
+               target="_blank" rel="noopener">
+              tiktok.com/@streamershouse26
+            </a>
+          </div>
+        </div>
+
+        <!-- YouTube -->
+        <div class="social-card">
+          <div class="social-icon social-yt"><i class="fab fa-youtube"></i></div>
+          <div>
+            <div class="social-label">YouTube</div>
+            <div class="social-link" contenteditable="true" data-fb="social-yt-handle">@streamershouse26</div>
+            <a class="social-link-url"
+               href="https://youtube.com/@streamershouse26?si=ByQZHNR3EGM3kaK9"
+               target="_blank" rel="noopener">
+              youtube.com/@streamershouse26
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Version / Footer -->
+      <div style="margin-top:32px">
+        <div class="version-card">
+          <div>
+            <div style="margin-bottom:7px">
+              <span class="version-tag">
+                <i class="fas fa-code-branch"></i> v0.1 Planning Mock-up
+              </span>
+            </div>
+            <div style="font-size:11px;color:var(--muted)">
+              Internal Planning Portal · Streamers House '26
+            </div>
+          </div>
+          <div>
+            <div style="font-size:10px;color:var(--muted2);margin-bottom:3px;text-transform:uppercase;letter-spacing:0.08em;font-weight:700">
+              Last Updated
+            </div>
+            <div class="last-updated-val" contenteditable="true" data-fb="last-updated">
+              June 28, 2026
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main><!-- /main -->
+
+  <!-- ============================================================
+       TOAST NOTIFICATION
+       ============================================================ -->
+  <div id="toast" role="status" aria-live="polite">
+    <i class="fas fa-check-circle" style="color:var(--gold)"></i>
+    <span id="toast-msg">Saved</span>
+  </div>
+
+  <!-- ============================================================
+       JAVASCRIPT — Load order matters:
+       1. creators.js — data + render functions (no dependencies)
+       2. firebase.js — Firebase config + sync (calls render functions)
+       3. app.js     — UI interactions (calls firebase + creator functions)
+       ============================================================ -->
+  <script src="js/creators.js"></script>
+  <script src="js/firebase.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
